@@ -7,9 +7,9 @@ public class ScrolPanControl : MonoBehaviour
     [SerializeField] private GameObject msgPref;
     [SerializeField] private GameObject Place;
 
-    public void Write(string text, string autor)
+    public void Write(string text)
     {
         var a = Instantiate(msgPref, Place.transform);
-        a.GetComponent<MesageConf>().Init(text, autor);
+        a.GetComponent<MesageConf>().Init(text);
     }
 }

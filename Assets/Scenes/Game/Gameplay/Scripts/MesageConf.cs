@@ -7,12 +7,9 @@ using UnityEngine.UI;
 public class MesageConf : MonoBehaviour
 {
     [SerializeField] private TMP_Text _msgText;
-    [SerializeField] private TMP_Text _msgAutor;
 
-    public void Init(string text, string autor)
+    public void Init(string text)
     {
-        _msgAutor.text = autor;
         _msgText.text = text;
-        _msgText.ForceMeshUpdate();
     }
 }

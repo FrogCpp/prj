@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -11,16 +12,35 @@ public class DiologTracker : MonoBehaviour
     [SerializeField] private TMP_InputField getMsg;
     [SerializeField] private ScrolPanControl scrolPan; 
 
-    private Dictionary<string, string> story = new(); //  слева - юзер, с права - нейро
+    private Dictionary<string, string> story = new(); // слева - юзер, с права - нейро
     private PoliConnect _poli;
+    private bool update = false;
+    private KeyValuePair<string, string> lastPair;
 
     void Start()
     {
         _poli = GetComponent<PoliConnect>();
     }
 
+    void Update()
+    {
+        if (update)
+        {
+            if (story.Count == 0) return;
+            var currentLast = story.Last();
+
+            if (!lastPair.Equals(currentLast))
+            {
+                scrolPan.Write(currentLast.Value);
+                lastPair = currentLast;
+                update = false;
+            }
+        }
+    }
+
     public void SendReq()
     {
+        update = true;
         string text = getMsg.text;
         getMsg.text = "";
 
@@ -36,28 +56,23 @@ public class DiologTracker : MonoBehaviour
          
         req.context = stry;
 
-        _ = Task.Run(() => CompliteReq(req));
+        scrolPan.Write(text);
 
-        scrolPan.Write(text, "You");
+        var b = Task.Run(() => CompliteReq(req));
     }
 
     private async Task CompliteReq(Request a)
     {
-        Debug.Log("думаю");
         Answer ans = await _poli.GetAnswer(a);
+        string[] answer;
         if (ans.ansType == Answer.answerType.Error)
         {
-            Debug.Log("поломалось");
-            // свапнуть на функцию ошибки
-            return;
+            answer = new string[] { "Err: сообщение слишком некорректно" };
         }
-
-        var answer = ans.text.Split("[~|~]");
-
-        Debug.Log(answer[0]);
-
-        scrolPan.Write(answer[0], client.ToString());
-
+        else
+        {
+            answer = ans.text.Split("[~|~]");
+        }
         story.Add(a.request, answer[0]);
     }
 }
