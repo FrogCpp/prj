@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ScrolPanControl : MonoBehaviour
 {
-    [SerializeField] private GameObject msgPref;
-    [SerializeField] private GameObject Place;
+    [SerializeField] private TMP_Text Place;
 
     public void Write(string text)
     {
-        var a = Instantiate(msgPref, Place.transform);
-        a.GetComponent<MesageConf>().Init(text);
+        Place.text += "\n\n" + text;
     }
 }

@@ -68,13 +68,10 @@ public class PoliConnect : MonoBehaviour
         if (req.context != "")
         {
             var b = await Write($"привет, твоя задча: сжать описанный здесь диолог в краткий пересказ. никаких посторонних фраз или уточнений в ответе, только сжатый пересказ. Контекст: диолог пациента и психолога.{req.context}");
-            Debug.Log(b.text);
-            Debug.Log(b.ansType);
             if (b.ansType == Answer.answerType.Sucsess)
             {
                 req.context = b.text;
             }
-            Debug.Log(req.context);
         }
 
 
@@ -105,7 +102,6 @@ public class PoliConnect : MonoBehaviour
 
     private async Task<Answer> Write(string Prompt)
     {
-        Debug.Log(Prompt);
 
         string encodedPrompt = HttpUtility.UrlEncode(Prompt);
         string apiUrl = $"https://gen.pollinations.ai/text/{encodedPrompt}?model=deepseek";
