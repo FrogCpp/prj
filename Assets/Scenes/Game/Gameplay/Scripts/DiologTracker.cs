@@ -87,7 +87,7 @@ public class DiologTracker : MonoBehaviour
         }
         else
         {
-            answer = ans.text.Split("[~|~]");
+            answer = ans.text.Split("~");
             stts = int.Parse(answer[1]);
         }
 
