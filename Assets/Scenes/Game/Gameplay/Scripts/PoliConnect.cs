@@ -33,6 +33,7 @@ public class PoliConnect : MonoBehaviour
     {
         public string text;
         public answerType ansType;
+        public string context;
 
 
         public enum answerType
@@ -64,6 +65,18 @@ public class PoliConnect : MonoBehaviour
 
     public async Task<Answer> GetAnswer(Request req)
     {
+        if (req.context != "")
+        {
+            var b = await Write($"привет, твоя задча: сжать описанный здесь диолог в краткий пересказ. никаких посторонних фраз или уточнений в ответе, только сжатый пересказ. Контекст: диолог пациента и психолога.\n\n{req.context}");
+            Debug.Log(b.text);
+            Debug.Log(b.ansType);
+            if (b.ansType == Answer.answerType.Sucsess)
+            {
+                req.context = b.text;
+            }
+            Debug.Log(req.context);
+        }
+
 
         string Prompt = "ты - актер в веб-визулальной новелле. ты - личность персонажа, со своим мнением, характером, стилем речи и поведением. Ты находишься на сеансе у психолога (игрока) у тебя есть конкретная проблема, однако о ее существовании ты не догадываешься. твоя задача грамотно отобразить, как себя вел бы и разговаривал персонаж, которым ты являешься " +
             "тебе не нужно описывать действия/выражение лица. только то, что персонаж говорит. для эмоций у тебя есть отдельная системно-выделенная область в шаблоне ответа. Так же, важно не переигрывать. .  нужно быть именно хорошим, глубоким актером, чувствовать персонажа." +
@@ -83,6 +96,15 @@ public class PoliConnect : MonoBehaviour
             "твой ответ пользователю[~|~]оценка сеанса (0|1)[~|~]эмоции: (радость/грусть/равнодушие/раздрожение/волнение/смущение) выбрать ты должен ровно одну, из списка\nгде [~|~] - это разделительный знак";
 
 
+        var outp = await Write(Prompt);
+        outp.context = req.context;
+
+        return outp;
+    }
+
+
+    private async Task<Answer> Write(string Prompt)
+    {
         Debug.Log(Prompt);
 
         string encodedPrompt = HttpUtility.UrlEncode(Prompt);

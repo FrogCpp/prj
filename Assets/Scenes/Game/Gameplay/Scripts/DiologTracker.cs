@@ -59,11 +59,11 @@ public class DiologTracker : MonoBehaviour
         Request req = new();
         req.clientType = client;
         req.request = text;
-        string stry = "начало диолога:\n\n";
+        string stry = "";
         foreach (var a in story)
         {
-            stry += "пользователь: " + a.Key + "\n\n";
-            stry += "твой предыдущий ответ: " + a.Value + "\n\n";
+            stry += "\n\n" + a.Key + "\n\n";
+            stry += a.Value;
         }
          
         req.context = stry;
@@ -82,7 +82,7 @@ public class DiologTracker : MonoBehaviour
         string[] answer;
         if (ans.ansType == Answer.answerType.Error)
         {
-            answer = new string[] { "Err: сообщение слишком некорректно" };
+            answer = new string[] { "Err: broken msg" };
             stts = 0;
         }
         else
@@ -90,6 +90,9 @@ public class DiologTracker : MonoBehaviour
             answer = ans.text.Split("[~|~]");
             stts = int.Parse(answer[1]);
         }
+
+        story.Clear();
+        story.Add(ans.context, "");
         story.Add(a.request, answer[0]);
     }
 }
