@@ -123,5 +123,8 @@ public class DiologTracker : MonoBehaviour
         story.Clear();
         story.Add(ans.context, "");
         story.Add(a.request, answer[0]);
+
+
+        Debug.Log(ans.text + '\n' + ans.ansType + '\n' + ans.context);
     }
 }
