@@ -24,6 +24,7 @@ public class DiologTracker : MonoBehaviour
     void Start()
     {
         _poli = GetComponent<PoliConnect>();
+        getMsg.onSubmit.AddListener(SendReq);
     }
 
     void Update()
@@ -41,12 +42,43 @@ public class DiologTracker : MonoBehaviour
 
                 if (stts != 0)
                 {
-                    var w = Instantiate(EndWinPref, parentOfEndWin.transform);
-                    w.GetComponent<FibalWindowInit>().Init(stts == 1);
+                    EndLevel();
                 }
             }
         }
     }
+
+    public void EndLevel()
+    {
+        var w = Instantiate(EndWinPref, parentOfEndWin.transform);
+        w.GetComponent<FibalWindowInit>().Init(stts == 1);
+    }
+
+    public void SendReq(string text)
+    {
+        if (stts != 0) return;
+
+        update = true;
+        getMsg.text = "";
+
+        Request req = new();
+        req.clientType = client;
+        req.request = text;
+        string stry = "";
+        foreach (var a in story)
+        {
+            stry += "\n\n" + a.Key + "\n\n";
+            stry += a.Value;
+        }
+
+        req.context = stry;
+
+        scrolPan.Write(text);
+
+        var b = Task.Run(() => CompliteReq(req));
+    }
+
+
 
     public void SendReq()
     {
@@ -75,10 +107,7 @@ public class DiologTracker : MonoBehaviour
 
     private async Task CompliteReq(Request a)
     {
-        Debug.Log("думаю");
         Answer ans = await _poli.GetAnswer(a);
-        Debug.Log(ans.text);
-        Debug.Log(ans.ansType);
         string[] answer;
         if (ans.ansType == Answer.answerType.Error)
         {
