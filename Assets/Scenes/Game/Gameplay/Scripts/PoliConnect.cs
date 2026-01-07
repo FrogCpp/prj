@@ -83,6 +83,8 @@ public class PoliConnect : MonoBehaviour
             "твой ответ пользователю[~|~]оценка сеанса (0|1)[~|~]эмоции: (радость/грусть/равнодушие/раздрожение/волнение/смущение) выбрать ты должен ровно одну, из списка\nгде [~|~] - это разделительный знак";
 
 
+        Debug.Log(Prompt);
+
         string encodedPrompt = HttpUtility.UrlEncode(Prompt);
         string apiUrl = $"https://gen.pollinations.ai/text/{encodedPrompt}?model=deepseek";
 

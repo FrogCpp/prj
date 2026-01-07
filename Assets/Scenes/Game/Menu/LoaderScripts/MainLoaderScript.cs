@@ -38,7 +38,7 @@ public class MainLoaderScript : MonoBehaviour
 
         while (!operation.isDone)
         {
-            float progress = operation.progress;
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
 
             if (progressBar != null)
                 progressBar.value = progress;
