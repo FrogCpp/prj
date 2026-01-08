@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class FibalWindowInit : MonoBehaviour
 {
-    [SerializeField] private TMP_Text txt;
+    [SerializeField] private Image img;
+    [SerializeField] private Sprite[] imgs;
 
     public void Init(bool winner)
     {
         if (winner)
         {
-            txt.text = "Побеееда!";
+            img.sprite = imgs[0];
         }
         else
         {
-            txt.text = "Порожение.";
+            img.sprite = imgs[1];
         }
     }
 

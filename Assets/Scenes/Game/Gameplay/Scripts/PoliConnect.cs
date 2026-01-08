@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -52,15 +53,15 @@ public class PoliConnect : MonoBehaviour
 
     public static readonly Dictionary<client, string> persone = new Dictionary<client, string> 
     {
-        { client.testClient, "Джон Доу: усталый мужчина средних лет" }
+        { client.testClient, "Феликс — рыба-фуга, циничный и едкий интеллектуал средних лет. Работает «независимым консультантом по безопасности». Патрулирует риф, выискивая «нарушения» и раздавая язвительные замечания. При малейшем намёке на угрозу (часто мнимой) мгновенно раздувается, выпуская шипы. Говорит быстро, отрывисто, с умными словами и снисхождением." }
     };
     public static readonly Dictionary<client, string> personeProblem = new Dictionary<client, string> 
     {
-        { client.testClient, "вопреки своей скучной внешности фанатеет от низшевых рпг-мейкер игр (крайе аморальный контент) но никак не может себе в этом признаться, поэтому не играет в них, от этого страдает" }
+        { client.testClient, "Вырос в шумном косяке. В юности был общительнее, но после нападения хищника в панике рыбы поранили друг друга шипами. Феликс сделал вывод: близость причиняет боль, а безопасность — в одиночестве и колючести. Это стало его абсолютной идеей." }
     };
     public static readonly Dictionary<client, string> personeStory = new Dictionary<client, string>
     {
-        { client.testClient, "с детства воспитан, как *настоящий мужчина* должен работать и зарабатывать. отдыхать нельзя, нельзя быть странным - говорили ему родители." }
+        { client.testClient, "Парализующий страх близости и тотальное недоверие, замаскированные под убеждённость в своём превосходстве. Искренне верит, что проблема в «глупых и опасных» соседях, а не в его гипертрофированной реакции «раздуться и уколоть»." }
     };
 
     public async Task<Answer> GetAnswer(Request req)
@@ -93,6 +94,9 @@ public class PoliConnect : MonoBehaviour
             "твой ответ пользователю~оценка сеанса (0|1)~эмоции: (радость/грусть/равнодушие/раздрожение/волнение/смущение) выбрать ты должен ровно одну, из списка\nгде ~ - это разделительный знак. Ты обязана предоставить все три пункта, и обязательно разделить их именно этим знаком.";
 
 
+        Debug.Log(Prompt);
+        Debug.Log(Prompt.Length);
+
         var outp = await Write(Prompt);
         outp.context = req.context;
 
@@ -102,24 +106,31 @@ public class PoliConnect : MonoBehaviour
 
     private async Task<Answer> Write(string Prompt)
     {
-
-        string encodedPrompt = HttpUtility.UrlEncode(Prompt);
-        string apiUrl = $"https://gen.pollinations.ai/text/{encodedPrompt}?model=deepseek";
-
-        var httpRequest = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-        httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-            "Bearer", "sk_vXoFfdeKiuVpHadbOexq1Vx83CDipvuO");
-
-        var response = await _httpClient.SendAsync(httpRequest);
-        response.EnsureSuccessStatusCode();
-
-        string responseText = await response.Content.ReadAsStringAsync();
-
-        return new Answer
+        try
         {
-            text = responseText,
-            ansType = (IsJsonError(responseText) ? Answer.answerType.Error : Answer.answerType.Sucsess)
-        };
+            string encodedPrompt = HttpUtility.UrlEncode(Prompt);
+            string apiUrl = $"https://gen.pollinations.ai/text/{encodedPrompt}?model=deepseek";
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+            httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer", "sk_vXoFfdeKiuVpHadbOexq1Vx83CDipvuO");
+
+            var response = await _httpClient.SendAsync(httpRequest);
+            response.EnsureSuccessStatusCode();
+
+            string responseText = await response.Content.ReadAsStringAsync();
+
+            return new Answer
+            {
+                text = responseText,
+                ansType = (IsJsonError(responseText) ? Answer.answerType.Error : Answer.answerType.Sucsess)
+            };
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            return new Answer();
+        }
     }
 
 
