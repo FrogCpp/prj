@@ -3,13 +3,31 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Windows;
 
 public class InfoBoardControl : MonoBehaviour
 {
     private TMP_Text text;
+    private int lim = 200;
+    [SerializeField] private TMP_Text limText;
+    [SerializeField] private TMP_InputField ipf;
 
     void Start()
     {
+        ipf.onValueChanged.AddListener(OnEditText);
+        ipf.onSubmit.AddListener(OnEndEdit);
+
+        string description;
+        try
+        {
+            description = PlayerPrefs.GetString("Description");
+            ipf.text = description;
+        }
+        catch
+        {
+            Debug.Log("no decription");
+        }
+
         text = GetComponent<TMP_Text>();
 
         text.text = "Вы — подводный психотерапевт, готовый погрузиться в пучины сознания морских обитателей.\r\nКаждая новая рыбка — новая история, спрятанная среди кораллов страхов и водорослей воспоминаний.";
@@ -60,5 +78,21 @@ public class InfoBoardControl : MonoBehaviour
         }
 
         SceneManager.LoadScene("Load");
+    }
+
+
+    public void OnEditText(string text)
+    {
+        limText.text = $"{text.Length}/{lim.ToString()}";
+
+        if (text.Length > lim)
+        {
+             ipf.text = text.Substring(0, lim);
+        }
+    }
+
+    public void OnEndEdit(string text)
+    {
+        PlayerPrefs.SetString("Description", text);
     }
 }

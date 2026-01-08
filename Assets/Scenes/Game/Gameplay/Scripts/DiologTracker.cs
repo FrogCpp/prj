@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using static PoliConnect;
 
@@ -74,6 +75,17 @@ public class DiologTracker : MonoBehaviour
         req.context = stry;
 
         scrolPan.Write(text);
+
+        string description;
+        try
+        {
+            description = PlayerPrefs.GetString("Description");
+            req.pers = description;
+        }
+        catch
+        {
+            Debug.Log("no decription");
+        }
 
         var b = Task.Run(() => CompliteReq(req));
     }
